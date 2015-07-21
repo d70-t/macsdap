@@ -11,7 +11,16 @@ CA_CERTS = os.path.join(basedir, 'cacerts.txt')
 pydap.lib.CA_CERTS = CA_CERTS
 
 class MACSdap(object):
-    def __init__(self, key=None, host='https://macsserver.physik.uni-muenchen.de'):
+    def __init__(self, key=None, host=None):
+        if key is None or host is None:
+            try:
+                config = json.load(open(os.path.expanduser('~/.macs/macsdap.json')))
+            except IOError:
+                config = {}
+            if key is None:
+                key = config.get('key', None)
+            if host is None:
+                host = config.get('host', 'https://macsserver.physik.uni-muenchen.de')
         self.key = key
         self.host = host
     def __getitem__(self, oid):

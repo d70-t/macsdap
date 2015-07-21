@@ -4,10 +4,14 @@ macsDAP is a wrapper around pydap which simplifies access to the macsServer.
 
 ## usage
 
+macsDAP can be used as follows:
+
     import macsdap
     D = macsdap.MACSdap(key=<your API key>)
     ds = D[<dataset id>]
     imshow(ds.previewdata)
+
+Please note that the preferred way of configuring macsDAP ist by using the configuration file as described below.
 
 Searching for data is also possible like the following:
 
@@ -18,6 +22,24 @@ Searching for data is also possible like the following:
 For quick spectral preview, results provide a show() methos:
 
     D[<dataset id>].show()
+
+## config
+
+It is possible to create a configuration file in the users home directory, namely as:
+
+    ~/.macs/macsdap.json
+
+which may contain the key and/or the host to connect to using MACSdap:
+
+    {
+        "key": <your API key>,
+        "host": <host to connect to>
+    }
+
+This allows to create the MACSdap instance simply by:
+
+    import macsdap
+    D = macsdap.MACSdap()
 
 ## requirements
 
