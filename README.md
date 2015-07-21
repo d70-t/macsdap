@@ -50,4 +50,4 @@ It can be installed by:
 
 If you do the setup using pip, you should provide --process-dependency-links and it will automatically be installed:
 
-    pip install --process-dependency-links git+ssh://git@git.die70.de:mim/macsdap.git
+    pip install --process-dependency-links git+ssh://git@git.die70.de/mim/macsdap.git
