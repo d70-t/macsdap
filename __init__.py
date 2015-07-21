@@ -81,6 +81,10 @@ class MACSdapVariable(object):
     def __getitem__(self, key):
         if not isinstance(key, tuple):
             key = (key,)
+        for i, el in enumerate(key):
+            if el is Ellipsis:
+                key = key[:i] + (slice(None),)*(len(self.shape)-len(key)+1) + key[i+1:]
+                break
         return self._variable[key][tuple((0 if isinstance(k,int) else slice(None)) for k in key)]
     def __dir__(self):
         return dir(self._variable)
