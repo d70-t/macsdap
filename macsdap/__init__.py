@@ -31,6 +31,9 @@ class MACSdap(object):
         return url
     def _request(self, urlpart, *args, **kwargs):
         return self._h.request(self._mkUrl(urlpart), *args, **kwargs)
+    def _getJSON(self, urlpart):
+        _,data = self._request(urlpart)
+        return json.loads(data)
     def __getitem__(self, oid):
         return MACSdapDS(pydap.client.open_url(self._mkUrl('/dap/'+oid)))
     def search(self, **kwargs):
@@ -104,8 +107,7 @@ class SearchResult(object):
     def __init__(self, baseRequest, macsdap):
         self._baseRequest = baseRequest
         self._macsdap = macsdap
-        (resp, content) = self._macsdap._request(baseRequest)
-        data = json.loads(content)
+        data = self._macsdap._getJSON(baseRequest)
         self._count = data['count']
         self._limit = None
     @property
@@ -121,8 +123,7 @@ class SearchResult(object):
         ofs = 0
         step = 20
         while True:
-            (resp, content) = self._macsdap._request(self._baseRequest+'/OFS:%d/LIMIT:%d'%(ofs, step))
-            data = json.loads(content)
+            data = self._macsdap._getJSON(self._baseRequest+'/OFS:%d/LIMIT:%d'%(ofs, step))
             if len(data['result']) == 0:
                 break
             for i, res in enumerate(data['result'], ofs):
@@ -131,6 +132,5 @@ class SearchResult(object):
                 yield self._macsdap[res['_oid']]
             ofs = data['stop']
     def __getitem__(self, index):
-        (resp, content) = self._macsdap._request(self._baseRequest+'/OFS:%d/LIMIT:%d'%(index, 1))
-        data = json.loads(content)
+        data = self._macsdap._getJSON(self._baseRequest+'/OFS:%d/LIMIT:%d'%(index, 1))
         return self._macsdap[data['result'][0]['_oid']]
