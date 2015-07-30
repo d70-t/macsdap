@@ -5,6 +5,7 @@ import os
 import json
 import httplib2
 import datetime
+import dateutil.tz as datetz
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 CA_CERTS = os.path.join(basedir, 'cacerts.txt')
@@ -40,7 +41,10 @@ class MACSdap(object):
         kwargs = kwargs.copy()
         for k,v in kwargs.items():
             if isinstance(v, datetime.datetime):
-                kwargs[k] = (v - datetime.datetime(1970,1,1,0,0,0)).total_seconds()*1000.
+                try:
+                    kwargs[k] = (v - datetime.datetime(1970,1,1,0,0,0)).total_seconds()*1000.
+                except TypeError:
+                    kwargs[k] = (v - datetime.datetime(1970,1,1,0,0,0, tzinfo=datetz.tzutc())).total_seconds()*1000.
         return SearchResult('/query/%s'%('/'.join('%s:%s'%i for i in sorted(kwargs.items()))), self)
 
 class MACSdapDS(object):
