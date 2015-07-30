@@ -36,7 +36,7 @@ class MACSdap(object):
         _,data = self._request(urlpart)
         return json.loads(data)
     def __getitem__(self, oid):
-        return MACSdapDS(pydap.client.open_url(self._mkUrl('/dap/'+oid)))
+        return MACSdapDS(oid, pydap.client.open_url(self._mkUrl('/dap/'+oid)))
     def search(self, **kwargs):
         kwargs = kwargs.copy()
         for k,v in kwargs.items():
@@ -48,7 +48,8 @@ class MACSdap(object):
         return SearchResult('/query/%s'%('/'.join('%s:%s'%i for i in sorted(kwargs.items()))), self)
 
 class MACSdapDS(object):
-    def __init__(self, dataset):
+    def __init__(self, oid, dataset):
+        self._oid = oid
         self._dataset = dataset
     def __getattr__(self, name):
         try:
@@ -63,6 +64,10 @@ class MACSdapDS(object):
         return str(self._dataset)
     def __dir__(self):
         return dir(self._dataset) + self._dataset.keys()
+    def __hash__(self):
+        return int(self._oid, 16)
+    def __eq__(self, other):
+        return self._oid == other._oid
     def show(self, fig1=1, fig2=2):
         import matplotlib.pyplot as plt
         plt.ion()
