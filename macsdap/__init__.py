@@ -110,7 +110,7 @@ class MACSdapVariable(object):
                 break
         return self._variable[key][tuple((0 if isinstance(k,int) else slice(None)) for k in key)]
     def __dir__(self):
-        return dir(self._variable)
+        return self._variable.attributes.keys() + dir(self._variable)
 
 class SearchResult(object):
     def __init__(self, baseRequest, macsdap):
