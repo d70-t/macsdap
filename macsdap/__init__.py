@@ -140,7 +140,10 @@ class SearchResult(object):
                 yield self._macsdap[res['_oid']]
             ofs = data['stop']
     def __getitem__(self, index):
+        _index = index
         if index < 0:
             index = self.count + index
+        if index < 0 or index >= self.count:
+            raise IndexError('index %d not found in search result'%_index)
         data = self._macsdap._getJSON(self._baseRequest+'/OFS:%d/LIMIT:%d'%(index, 1))
         return self._macsdap[data['result'][0]['_oid']]
