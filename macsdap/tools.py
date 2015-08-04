@@ -13,7 +13,7 @@ def date2seconds(t):
     try:
         return (t - _epoch).total_seconds()
     except TypeError:
-        return (t - _epochUtc).total_seconds()
+        return (t - _epochUTC).total_seconds()
 
 def alternate(*args):
     for iterable in itertools.izip_longest(*args):
