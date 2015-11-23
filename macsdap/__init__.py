@@ -108,6 +108,8 @@ class MACSdapVariable(object):
                 key = key[:i] + (slice(None),)*(len(self.shape)-len(key)+1) + key[i+1:]
                 break
         return self._variable[key][tuple((0 if isinstance(k,int) else slice(None)) for k in key)]
+    def __len__(self):
+        return self.shape[0]
     def __dir__(self):
         return self._variable.attributes.keys() + dir(self._variable)
 
