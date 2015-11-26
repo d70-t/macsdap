@@ -126,6 +126,8 @@ class SearchResult(object):
             return self._count
         else:
             return min(self._limit, self._count)
+    def __len__(self):
+        return self.count
     def limit(self, limit):
         self._limit = limit
         return self
