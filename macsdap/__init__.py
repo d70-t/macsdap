@@ -13,6 +13,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 CA_CERTS = os.path.join(basedir, 'cacerts.txt')
 pydap.lib.CA_CERTS = CA_CERTS
 
+class MACSdapException(Exception):
+    ''' General MACSdap exception '''
+
+
+class MACSdapServerError(MACSdapException):
+    ''' Error which occured on the server '''
+
 class MACSdap(object):
     def __init__(self, key=None, host=None):
         if key is None or host is None:
@@ -118,6 +125,8 @@ class SearchResult(object):
         self._baseRequest = baseRequest
         self._macsdap = macsdap
         data = self._macsdap._getJSON(baseRequest)
+        if 'error' in data:
+            raise MACSdapServerError(data['error'])
         self._count = data['count']
         self._limit = None
     @property
