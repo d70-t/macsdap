@@ -100,7 +100,10 @@ class MACSdapDS(object):
         plt.ion()
         fig1 = plt.figure(fig1_no)
         ax1 = fig1.add_subplot(111)
-        ax1.imshow(self.previewdata[:].transpose(1, 0, 2))
+        previewdata = self.previewdata[:].transpose(1, 0, 2)
+        if previewdata.shape[-1] == 1:
+            previewdata = previewdata[...,0]
+        ax1.imshow(previewdata)
 
         fig2 = plt.figure(fig2_no)
         ax2 = fig2.add_subplot(111)
