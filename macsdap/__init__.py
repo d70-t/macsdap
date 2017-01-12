@@ -130,6 +130,10 @@ class MACSdapDS(object):
 
         fig1.canvas.mpl_connect('button_press_event', onclick)
 
+    @property
+    def oid(self):
+        return self._oid
+
 
 class MACSdapVariable(object):
     def __init__(self, variable):
