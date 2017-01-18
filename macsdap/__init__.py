@@ -55,7 +55,8 @@ class MACSdap(object):
         return json.loads(data)
 
     def __getitem__(self, oid):
-        return MACSdapDS(oid, pydap.client.open_url(self._mkUrl('/dap/'+oid)))
+        url = self._mkUrl('/dap/'+oid)
+        return MACSdapDS(oid, pydap.client.open_url(url), url)
 
     def search(self, **kwargs):
         kwargs = kwargs.copy()
@@ -67,9 +68,10 @@ class MACSdap(object):
 
 
 class MACSdapDS(object):
-    def __init__(self, oid, dataset):
+    def __init__(self, oid, dataset, url):
         self._oid = oid
         self._dataset = dataset
+        self._url = url
 
     def __getattr__(self, name):
         try:
@@ -133,6 +135,10 @@ class MACSdapDS(object):
     @property
     def oid(self):
         return self._oid
+
+    @property
+    def dapurl(self):
+        return self._url
 
 
 class MACSdapVariable(object):
