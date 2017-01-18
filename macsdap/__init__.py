@@ -16,7 +16,10 @@ except ImportError:
         raise ImportError("xarray not found!")
 else:
     def urls2xarray(urls):
-        return xr.open_mfdataset(urls, engine='pydap')
+        array = xr.open_mfdataset(urls, engine='pydap')
+        if 'time' not in array.dims and 'frames' in array.dims:
+            array = array.swap_dims({'frames': 'time'})
+        return array
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 CA_CERTS = os.path.join(BASEDIR, 'cacerts.txt')
