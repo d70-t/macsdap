@@ -73,7 +73,7 @@ class MACSdap(object):
             if isinstance(v, datetime.datetime):
                 kwargs[k] = tools.date2seconds(v) * 1000.
         query_args = ['%s:%s' % i for i in sorted(kwargs.items())]
-        return SearchResult('/query/%s' % ('/'.join(query_args)), self)
+        return LazySearchResult('/query/%s' % ('/'.join(query_args)), self)
 
     def open_xarray(self, oids):
         return urls2xarray([self._mkUrl('/dap/'+oid) for oid in oids])
@@ -180,7 +180,52 @@ class MACSdapVariable(object):
         return self._variable.attributes.keys() + dir(self._variable)
 
 
-class SearchResult(object):
+class _SearchResult(object):
+    def __len__(self):
+        return self.count
+
+    def to_xarray(self):
+        return urls2xarray([ds.dapurl for ds in self])
+
+    def remove_overlapping_datasets(self):
+        datasets = list(self)
+        timespans = [(ds.time[0], ds.time[-1]) for ds in datasets]
+        while True:
+            for idx1, idx2 in tools.find_overlapping_indices(timespans):
+                len1 = len(datasets[idx1].time)
+                len2 = len(datasets[idx2].time)
+                if len1 < len2:
+                    to_remove = idx1
+                else:
+                    to_remove = idx2
+                del datasets[to_remove]
+                del timespans[to_remove]
+                duplicates = tools.find_overlapping_indices(timespans)
+                break
+            else:
+                break
+        return StrictSearchResult(datasets)
+
+
+class StrictSearchResult(_SearchResult):
+    def __init__(self, datasets):
+        self._datasets = datasets
+
+    @property
+    def count(self):
+        return len(self._datasets)
+
+    def limit(self, limit):
+        self._datasets = self._datasets[:limit]
+        return self
+
+    def __iter__(self):
+        return iter(self._datasets)
+
+    def __getitem__(self, index):
+        return self._datasets[index]
+
+class LazySearchResult(_SearchResult):
     def __init__(self, baseRequest, macsdap):
         self._baseRequest = baseRequest
         self._macsdap = macsdap
@@ -196,9 +241,6 @@ class SearchResult(object):
             return self._count
         else:
             return min(self._limit, self._count)
-
-    def __len__(self):
-        return self.count
 
     def limit(self, limit):
         self._limit = limit
@@ -227,6 +269,3 @@ class SearchResult(object):
         request = self._baseRequest+'/OFS:%d/LIMIT:%d' % (index, 1)
         data = self._macsdap._getJSON(request)
         return self._macsdap[data['result'][0]['_oid']]
-
-    def to_xarray(self):
-        return urls2xarray([ds.dapurl for ds in self])

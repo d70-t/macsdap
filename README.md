@@ -26,6 +26,8 @@ Searching for data is also possible like the following:
 It is also possible to get an xarray from a search result:
 
     data = res.to_xarray()
+    # or if duplicate times should be elliminated automatically:
+    data_without_duplicates = res.remove_overlapping_datasets().to_xarray()
 
 For quick spectral preview, results provide a show() methos:
 

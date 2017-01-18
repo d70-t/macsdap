@@ -20,6 +20,15 @@ def alternate(*args):
             if item is not None:
                 yield item
 
+def find_overlapping_indices(ranges):
+    for i, (start1, end1) in enumerate(ranges):
+        for j, (start2, end2) in enumerate(ranges[i+1:], i+1):
+            if any([start2 >= start1 and start2 <= end1,
+                    end2 >= start1 and end2 <= end1,
+                    start1 >= start2 and start1 <= end2,
+                    end1 >= start2 and end1 <= end2]):
+                yield (i, j)
+
 class Locator(object):
     def __init__(self, D, **search):
         self.search = search
