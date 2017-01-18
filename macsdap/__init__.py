@@ -9,6 +9,15 @@ import dateutil.tz as datetz
 
 import macsdap.tools as tools
 
+try:
+    import xarray as xr
+except ImportError:
+    def urls2xarray(_):
+        raise ImportError("xarray not found!")
+else:
+    def urls2xarray(urls):
+        return xr.open_mfdataset(urls, engine='pydap')
+
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 CA_CERTS = os.path.join(BASEDIR, 'cacerts.txt')
 pydap.lib.CA_CERTS = CA_CERTS
@@ -65,6 +74,9 @@ class MACSdap(object):
                 kwargs[k] = tools.date2seconds(v) * 1000.
         query_args = ['%s:%s' % i for i in sorted(kwargs.items())]
         return SearchResult('/query/%s' % ('/'.join(query_args)), self)
+
+    def open_xarray(self, oids):
+        return urls2xarray([self._mkUrl('/dap/'+oid) for oid in oids])
 
 
 class MACSdapDS(object):
@@ -215,3 +227,6 @@ class SearchResult(object):
         request = self._baseRequest+'/OFS:%d/LIMIT:%d' % (index, 1)
         data = self._macsdap._getJSON(request)
         return self._macsdap[data['result'][0]['_oid']]
+
+    def to_xarray(self):
+        return urls2xarray([ds.dapurl for ds in self])

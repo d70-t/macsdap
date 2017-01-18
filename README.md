@@ -13,11 +13,19 @@ macsDAP can be used as follows:
 
 Please note that the preferred way of configuring macsDAP ist by using the configuration file as described below.
 
+Multiple datasets can be loaded into one lazy xarray (this requires xarray and dask libraries to be installed):
+
+    data = D.open_xarray(<iterable of dataset ids>)
+
 Searching for data is also possible like the following:
 
     import datetime
     res = D.search(productType='calibrated_image', date_min=datetime.datetime(2014,9,5))
     imshow(res[5].previewdata)
+
+It is also possible to get an xarray from a search result:
+
+    data = res.to_xarray()
 
 For quick spectral preview, results provide a show() methos:
 
