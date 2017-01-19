@@ -36,7 +36,7 @@ class MACSdapServerError(MACSdapException):
 
 class MACSdap(object):
     def __init__(self, key=None, host=None):
-        if key is None or host is None:
+        if key is None and host is None:
             config_path = os.path.expanduser('~/.macs/macsdap.json')
             try:
                 config = json.load(open(config_path))
@@ -44,11 +44,11 @@ class MACSdap(object):
                 config = {}
             if key is None:
                 key = config.get('key', None)
-            if host is None:
-                try:
-                    host = config['host']
-                except KeyError:
-                    host = 'https://macsserver.physik.uni-muenchen.de'
+        if host is None:
+            try:
+                host = config['host']
+            except KeyError:
+                host = 'https://macsserver.physik.uni-muenchen.de'
         self.key = key
         self.host = host
         self._h = httplib2.Http(ca_certs=CA_CERTS)
