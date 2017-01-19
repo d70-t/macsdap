@@ -12,13 +12,19 @@ import macsdap.tools as tools
 try:
     import xarray as xr
 except ImportError:
-    def urls2xarray(_):
+    def urls2xarray(_, _2):
         raise ImportError("xarray not found!")
 else:
-    def urls2xarray(urls):
-        array = xr.open_mfdataset(urls, engine='pydap')
+    def urls2xarray(urls, engine='pydap'):
+        if 'netcdf' in engine.lower():
+            urls = map(tools.netcdf_url, urls)
+            array = xr.open_mfdataset(urls)
+        else:
+            array = xr.open_mfdataset(urls, engine=engine)
+
         if 'time' not in array.dims and 'frames' in array.dims:
             array = array.swap_dims({'frames': 'time'})
+
         return array
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
@@ -78,8 +84,8 @@ class MACSdap(object):
         query_args = ['%s:%s' % i for i in sorted(kwargs.items())]
         return LazySearchResult('/query/%s' % ('/'.join(query_args)), self)
 
-    def open_xarray(self, oids):
-        return urls2xarray([self._mkUrl('/dap/'+oid) for oid in oids])
+    def open_xarray(self, oids, engine='pydap'):
+        return urls2xarray([self._mkUrl('/dap/'+oid) for oid in oids], engine)
 
 
 class MACSdapDS(object):
@@ -155,6 +161,9 @@ class MACSdapDS(object):
     def dapurl(self):
         return self._url
 
+    @property
+    def netcdf_url(self):
+        return tools.netcdf_url(self.dapurl)
 
 class MACSdapVariable(object):
     def __init__(self, variable):
@@ -187,8 +196,8 @@ class _SearchResult(object):
     def __len__(self):
         return self.count
 
-    def to_xarray(self):
-        return urls2xarray([ds.dapurl for ds in self])
+    def to_xarray(self, engine='pydap'):
+        return urls2xarray([ds.dapurl for ds in self], engine)
 
     def remove_overlapping_datasets(self):
         datasets = list(self)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import urlparse
 import dateutil.tz as datetz
 import itertools
 import numpy as np
@@ -28,6 +29,25 @@ def find_overlapping_indices(ranges):
                     start1 >= start2 and start1 <= end2,
                     end1 >= start2 and end1 <= end2]):
                 yield (i, j)
+
+def netcdf_url(dapurl):
+    parts = urlparse.urlparse(dapurl)
+    query = parts.query.split("&")
+    key = None
+    for el in query:
+        if el.startswith("key="):
+            key = el[4:]
+    if key is not None:
+        key = key + ":a@"
+    else:
+        key = ""
+    query = [el for el in query if not el.startswith("key=")]
+    if query:
+        query = "?" + "&".join(query)
+    else:
+        query = ""
+    url = parts.scheme + "://" + key + parts.netloc + parts.path + query
+    return url
 
 class Locator(object):
     def __init__(self, D, **search):

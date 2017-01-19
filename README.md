@@ -29,6 +29,10 @@ It is also possible to get an xarray from a search result:
     # or if duplicate times should be elliminated automatically:
     data_without_duplicates = res.remove_overlapping_datasets().to_xarray()
 
+Normally, macsDAP uses only pydap for the communication with the server.
+However, some features of xarray might only work using netCDF4, to the ``open_xarray`` and ``to_xarray`` methods
+allow for an optional argument ``engine="netcdf"`` which allows to use netCDF4 as communication library for xarray.
+
 For quick spectral preview, results provide a show() methos:
 
     D[<dataset id>].show()
