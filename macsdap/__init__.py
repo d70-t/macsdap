@@ -201,7 +201,7 @@ class _SearchResult(object):
 
     def remove_overlapping_datasets(self):
         datasets = list(self)
-        timespans = [(ds.time[0], ds.time[-1]) for ds in datasets]
+        timespans = [ds.time[::len(ds.time)-1] for ds in datasets]
         while True:
             for idx1, idx2 in tools.find_overlapping_indices(timespans):
                 len1 = len(datasets[idx1].time)
