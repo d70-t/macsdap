@@ -57,6 +57,8 @@ This allows to create the MACSdap instance simply by:
 
 ## requirements
 
+This section might not be relevant anymore, if you try macsdap, first try it without this fix:
+
 Due to a missing root certificate in httplib2, currently a patched version of pydap is needed for https access.
 It can be installed by:
 
