@@ -15,16 +15,17 @@ except ImportError:
     def urls2xarray(_, _2):
         raise ImportError("xarray not found!")
 else:
+    def preprocess_arrays(array):
+        if 'time' not in array.dims and 'frames' in array.dims:
+            array = array.swap_dims({'frames': 'time'})
+        return array
+
     def urls2xarray(urls, engine='pydap'):
         if 'netcdf' in engine.lower():
             urls = map(tools.netcdf_url, urls)
-            array = xr.open_mfdataset(urls)
+            array = xr.open_mfdataset(urls, preprocess=preprocess_arrays, concat_dim="time")
         else:
-            array = xr.open_mfdataset(urls, engine=engine)
-
-        if 'time' not in array.dims and 'frames' in array.dims:
-            array = array.swap_dims({'frames': 'time'})
-
+            array = xr.open_mfdataset(urls, preprocess=preprocess_arrays, concat_dim="time", engine=engine)
         return array
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
