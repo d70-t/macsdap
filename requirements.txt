@@ -1,0 +1,6 @@
+numpy
+pydap
+httplib2
+dateutil
+xarray
+dask
