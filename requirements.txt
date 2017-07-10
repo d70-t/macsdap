@@ -1,6 +1,6 @@
 numpy
 pydap
 httplib2
-dateutil
+python-dateutil
 xarray
 dask
