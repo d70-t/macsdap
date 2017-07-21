@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pydap.lib
 import pydap.client
+import numpy as np
 import os
 import json
 import httplib2
@@ -124,7 +125,7 @@ class MACSdapDS(object):
         plt.ion()
         fig1 = plt.figure(fig1_no)
         ax1 = fig1.add_subplot(111)
-        previewdata = self.previewdata[:].transpose(1, 0, 2)
+        previewdata = np.array(self.previewdata).transpose(1, 0, 2)
         if previewdata.shape[-1] == 1:
             previewdata = previewdata[...,0]
         ax1.imshow(previewdata)
@@ -132,7 +133,7 @@ class MACSdapDS(object):
         fig2 = plt.figure(fig2_no)
         ax2 = fig2.add_subplot(111)
         xmax, ymax = self.radiance.shape[:2]
-        wvlCenter = self.wavelength[self.wavelength.shape[0]/2]
+        wvlCenter = np.array(self.wavelength[self.wavelength.shape[0]/2])
         ax2.set_xlabel('wavelength [%s]' % self.wavelength.units)
         ax2.set_ylabel('radiance [%s]' % self.radiance.units)
 
@@ -146,8 +147,9 @@ class MACSdapDS(object):
                 return
             if x >= 0 and x < xmax and y >= 0 and y < ymax:
                 print 'loading spectrum @%d,%d' % (x, y)
+                data = np.array(self.radiance[x, y])
                 ax2.plot(wvlCenter,
-                         self.radiance[x, y],
+                         data,
                          label='@%d,%d' % (x, y))
                 print 'drawing...'
                 fig2.canvas.draw()
