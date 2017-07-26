@@ -120,6 +120,9 @@ class MACSdapDS(object):
     def __eq__(self, other):
         return self._oid == other._oid
 
+    def to_xarray(self, engine='pydap'):
+        return urls2xarray([self._url], engine)
+
     def show(self, fig1_no=1, fig2_no=2):
         import matplotlib.pyplot as plt
         plt.ion()
