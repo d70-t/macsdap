@@ -19,6 +19,8 @@ else:
     def preprocess_arrays(array):
         if 'time' not in array.dims and 'frames' in array.dims:
             array = array.swap_dims({'frames': 'time'})
+        if 'time' not in array.dims and 'samples' in array.dims:
+            array = array.swap_dims({'samples': 'time'})
         return array
 
     def urls2xarray(urls, engine='pydap'):
