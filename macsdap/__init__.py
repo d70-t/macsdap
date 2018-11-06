@@ -253,7 +253,7 @@ class LazySearchResult(_SearchResult):
         self._macsdap = macsdap
         data = self._macsdap._getJSON(baseRequest)
         if 'error' in data:
-            raise MACSdapServerError(data['error'])
+            raise MACSdapServerError("{} while requesting: \"{}\"".format(data['error'], baseRequest))
         self._count = data['count']
         self._limit = None
 
