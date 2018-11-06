@@ -85,6 +85,8 @@ class MACSdap(object):
         for k, v in kwargs.items():
             if isinstance(v, datetime.datetime):
                 kwargs[k] = tools.date2seconds(v) * 1000.
+            if isinstance(v, np.datetime64):
+                kwargs[k] = (v - np.datetime64("1970-01-01")) / np.timedelta64(1, "ms")
         query_args = ['%s:%s' % i for i in sorted(kwargs.items())]
         return LazySearchResult('/query/%s' % ('/'.join(query_args)), self)
 
