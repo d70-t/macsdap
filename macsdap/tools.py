@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import urlparse
+import six
+if six.PY2:
+    from urlparse import urlparse
+else:
+    from urllib.parse import urlparse
 import dateutil.tz as datetz
 import itertools
 import numpy as np
@@ -31,7 +35,7 @@ def find_overlapping_indices(ranges):
                 yield (i, j)
 
 def netcdf_url(dapurl):
-    parts = urlparse.urlparse(dapurl)
+    parts = urlparse(dapurl)
     query = parts.query.split("&")
     key = None
     for el in query:

@@ -25,9 +25,10 @@ setup(
         "License :: OSI Approved :: BSD License",
     ],
     install_requires=[
-        "pydap==3.1.1cert"
-    ],
-    dependency_links=[
-        "git+https://github.com/d70-t/pydap@master#egg=pydap-3.1.1cert" #pin to a version with CA_CERTS support
+        "six",
+        "requests",
+        "httplib2",
+        "pydap>=3.1.1",
+        "python-dateutil",
     ]
 )

@@ -74,7 +74,7 @@ class MACSdap(object):
 
     def _getJSON(self, urlpart):
         _, data = self._request(urlpart)
-        return json.loads(data)
+        return json.loads(data.decode("utf-8"))
 
     def __getitem__(self, oid):
         url = self._mkUrl('/dap/'+oid)
@@ -153,12 +153,12 @@ class MACSdapDS(object):
             except TypeError:
                 return
             if x >= 0 and x < xmax and y >= 0 and y < ymax:
-                print 'loading spectrum @%d,%d' % (x, y)
+                print('loading spectrum @%d,%d' % (x, y))
                 data = np.array(self.radiance[x, y])
                 ax2.plot(wvlCenter,
                          data,
                          label='@%d,%d' % (x, y))
-                print 'drawing...'
+                print('drawing...')
                 fig2.canvas.draw()
 
         fig1.canvas.mpl_connect('button_press_event', onclick)
