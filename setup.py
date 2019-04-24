@@ -30,5 +30,8 @@ setup(
         "httplib2",
         "pydap>=3.1.1",
         "python-dateutil",
-    ]
+    ],
+    package_data={
+        "": ["cacerts.txt"],
+    }
 )
